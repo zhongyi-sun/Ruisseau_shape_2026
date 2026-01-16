@@ -424,35 +424,41 @@ class isomapcoord:
         return curList, pbList
     
 
-    ####################################  WIP  ##################################
+    ################################################  WIP  #################################################
+    ########################################################################################################
     def getSubsetNameNormWeight(self, oldWeightPath, newSubjNames, newWeightSavePath):
         """
-        Takes an existing normalized weight file, filters it by a list of 
-        new subjects, and re-normalizes the weights.
+        Filters and re-normalizes weights. 
+        Maintains bit-for-bit identity if the subject list is unchanged.
         """
-        # 1. Load the original normalized weight matrix
-        # (Assuming CSV format based on your previous function)
+        # 1. Load with index name preservation
         df_old = pd.read_csv(oldWeightPath, index_col=0)
-
-        # 2. Filter to keep only the new subjects
-        # .intersection ensures we don't crash if a name is missing
-        valid_names = df_old.index.intersection(newSubjNames)
+        
+        # 2. Filter subjects
+        valid_names = [name for name in newSubjNames if name in df_old.index]
         df_new = df_old.loc[valid_names].copy()
-
-        print(f"Original subjects: {len(df_old)} | New subset: {len(df_new)}")
-
-        # 3. Re-normalize
-        # We sum the weights of the remaining subjects for each column (axis=0)
+        
+        # 3. Smart Re-normalization
+        # Calculate sums for each column
         column_sums = df_new.sum(axis=0)
+        # Check if actually need to re-normalize.
+        if not np.allclose(column_sums, 1.0, atol=1e-15): # use tolerance (1e-15) to see if the sum is basically 1.0
+            print("Re-normalizing subset...")
+            column_sums = column_sums.replace(0, 1)
+            df_normalized = df_new.divide(column_sums, axis=1)
+        else:
+            print("Subject list unchanged or already normalized. Skipping division to preserve precision.")
+            df_normalized = df_new
 
-        # To avoid division by zero (in case a column sum is 0), use .replace
-        column_sums = column_sums.replace(0, 1)
-
-        # Divide each row by the new column totals
-        # Pandas aligns this automatically across columns
-        df_normalized = df_new.divide(column_sums, axis=1)
-
-        # 4. Save the new matrix
-        df_normalized.to_csv(newWeightSavePath)
+        # 4. Save with Strict Formatting
+        # Use float_format to control the number of digits written to the CSV
+        df_normalized.to_csv(
+            newWeightSavePath, 
+            index=True, 
+            header=True,
+            sep=',', 
+            float_format='%.16g' # '%g' is better for mixed scientific notation
+        )
         
         return df_normalized
+

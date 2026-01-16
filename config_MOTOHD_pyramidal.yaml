@@ -3,7 +3,7 @@ global:
   call_Add_PrepBckTal: false     # verify function param
   
   #################  New calcDist functionality  ###############
-  callCalcDist_bySubject: true
+  callCalcDist_bySubject: false
   
   mode: cluster_job  # local_parallel, change this to "cluster_job" for cluster submission   
   # --- Specific Parameters for Local Parallelism ---
@@ -51,18 +51,17 @@ global:
   callGenMA_ima: false           # default true, verify function param
   callGenMA_mesh: false          # default true, verify function param
 
-  ############################  WIP projection  ############################
-  callProjectionPrepMA_ima: false
-  callProjectionGenISOMesh: false
+  ###########################################  WIP projection  ##########################################
+  callProjectionPrepMA_ima: true
   callProjectionGenMA_ima: false
   callProjectionGenMA_mesh: false
-  ##########################################################################
+  #######################################################################################################
 
   removeICPres: false
   removeJson: false             # default false, after verification
 
-  #generalRoot: /media/sf_C_DRIVE/A_joyCODE/DEV_LIN     # virtual machine
-  generalRoot: /home/sulci/JS/A_joyCODE/DEV_LIN       # local
+  generalRoot: /media/sf_C_DRIVE/A_joyCODE/DEV_LIN     # virtual machine
+  #generalRoot: /home/sulci/JS/A_joyCODE/DEV_LIN       # local
   curBase: /test_CST_MOTOHD
   curRegion: CST
     
@@ -150,19 +149,6 @@ functions:
     numCoord: 10
     scale: 1 
 
-  ############################  WIP  projection  #########################
-  callProjectionPrepMA_ima:  
-    filterOut: false
-    typeIso: Cmds
-    numNeig: 30            # 10 by default, change to test effect, 17 for control only  
-    typeDist: min
-    numDim: 3      
-    numCoord: 10
-    scale: 1 
-    subjectRescale: true  # true if source subject set is smaller than the target subject set
-    
-
-
   call_Add_PrepMA_ima:
     filterOut: true
     typeIso: Cmds
@@ -174,6 +160,57 @@ functions:
     old_base_1: /Base62
     old_base_2: /ampExt
     new_base: /Base62_ampExt
+
+
+  ##############################################  WIP  projection  ############################################
+  callProjectionPrepMA_ima:  
+    filterOut: false
+    typeIso: Cmds
+    numNeig: 30            # 10 by default, change to test effect, 17 for control only  
+    typeDist: min
+    numDim: 3      
+    numCoord: 10
+    scale: 1 
+    projectionType: CSTMOTOHD
+    subjectRescale: true  # true if source subject set is smaller than the target subject set
+    sourceRegionPath:  /test_CST_MOTOHD # Note: use generalRoot defined above
+    targetRegionPath:  /MOTOHD         # Note: use generalRoot defined above
+    sourceRegion: CST
+    targetRegion: CSSyl
+    projectionDim: 1
+
+  callProjectionGenMA_ima:
+    filterOut: false
+    typeIso: Cmds
+    numNeig: 30            # 10 by default, change to test effect, 17 for control only   
+    typeDist: min
+    numDim: 3         
+    numCoord: 10
+    scale: 1
+    projectionType: CSTMOTOHD
+    targetRegionPath:  /MOTOHD         # Note: use generalRoot defined above
+    targetRegion: CSSyl
+    projectionDim: 1
+
+  callProjectionGenMA_mesh:
+    filterOut: false
+    typeIso: Cmds
+    numNeig: 30            # 10 by default, change to test effect, 17 for control only    
+    typeDist: min
+    numDim: 3
+    numCoord: 10
+    scale: 1   
+    smoothingFactor: 2.0  # -o default 2.0
+    coordScale: 900       # -e for regulating spacing, default 500, CST 900  
+    weightScale: 1        # -l                 
+    aimsThreshold: 0.1   # -t default 0.06, CST 0.3
+    projectionType: CSTMOTOHD
+    targetRegionPath:  /MOTOHD         # Note: use generalRoot defined above
+    targetRegion: CSSyl
+    projectionDim: 1
+##############################################  WIP  projection  ############################################
+
+
 
   callGenMA_ima:
     filterOut: false
@@ -193,9 +230,9 @@ functions:
     numCoord: 10
     scale: 1   
     smoothingFactor: 2.0  # -o default 2.0
-    coordScale: 900       # -e for regulating spacing, default 500   
+    coordScale: 900       # -e for regulating spacing, default 500, CST 900  
     weightScale: 1        # -l                 
-    aimsThreshold: 0.3   # -t default 0.06
+    aimsThreshold: 0.3   # -t default 0.06, CST 0.3
 
 
       

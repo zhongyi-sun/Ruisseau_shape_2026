@@ -171,10 +171,11 @@ def main(argv):
     id = cmd_args.id # id usually only comes from Argparse in cluster mode
     #############################  end priority decision  ###########################
 
-
-    #############################  WIP  ############################    
+    ####################################################   WIP   ######################################################
+    #############################  init tools  ############################    
     curTools = general_tools(1)
     curMA_basic_U = MA_basic_tools(1)
+    curIsomapU = isomapcoord(1) 
 
     callPrepBckTal = config['global']['callPrepBckTal']
     call_Add_PrepBckTal = config['global']['call_Add_PrepBckTal']
@@ -212,6 +213,12 @@ def main(argv):
     call_Add_PrepMA_ima = config['global']['call_Add_PrepMA_ima']  
     callGenMA_ima = config['global']['callGenMA_ima'] 
     callGenMA_mesh = config['global']['callGenMA_mesh']    
+
+    ####################################################  projection WIP  ##########################################################
+    callProjectionPrepMA_ima = config['global']['callProjectionPrepMA_ima']     
+    callProjectionGenMA_ima = config['global']['callProjectionGenMA_ima'] 
+    callProjectionGenMA_mesh = config['global']['callProjectionGenMA_mesh'] 
+
     ###########################################
     # datastruture and filenaming convention  #
     ###########################################
@@ -499,7 +506,7 @@ def main(argv):
 
 
 ##############################################################################################
-############################  WIP  ############################
+############################  New Structure  ############################
     if constructICPres:
         namesFile = path+os.sep+curRegion+os.sep+"bck"+os.sep+"subjNames_bck.txt"
         fileList = curTools.retrieveNames(namesFile)
@@ -700,8 +707,7 @@ def main(argv):
         typeIso = config['functions']['callGetIsomap']['typeIso']  
         numNeig = config['functions']['callGetIsomap']['numNeig']
         typeDist = config['functions']['callGetIsomap']['typeDist']
-        numDim = config['functions']['callGetIsomap']['numDim']
-        curIsomapU = isomapcoord(1)   
+        numDim = config['functions']['callGetIsomap']['numDim'] 
 
         curIsomapU.getIsomap(sulciName=curRegion,ICPfilePath=regionISOPath,ISOfilePath=regionISOPath,typeIso=typeIso,numNeig=numNeig,filterOut=filterOut,typeDist=typeDist,numDim=numDim)
         
@@ -726,7 +732,6 @@ def main(argv):
         outFileNameMin = regionISOPath + 'minDist' + curRegion + '.txt'
         outFileNameMax = regionISOPath + 'maxDist' + curRegion + '.txt' 
 
-        curIsomapU = isomapcoord(1)
         coordDim = 1  # the numDim_coordDim                     
         for i in range(numDim):
             coordDim = i + 1
@@ -779,7 +784,6 @@ def main(argv):
 ###############################   calculate normWeight   ##########################################
 ###################################################################################################
     if callGetNormWeight:
-        curIsomapU = isomapcoord(1) 
 
         filterOut = config['functions']['callGetNormWeight']['filterOut']
         typeIso = config['functions']['callGetNormWeight']['typeIso']
@@ -918,27 +922,168 @@ def main(argv):
 
 
 
-##############################################    WIP projection    ############################################
-    ####################    
-    ## for projection ##
-    ####################
-    if callProjectionPrepMA_ima:   
-        curIsomapU = isomapcoord(1) 
-        projection = 'CST' # Anatomy,'HCPactivation','HCPmask','HCPbundleM','HCPcurvature','HCPmyelin','HCPbundle'
-        subProcess = ""  # eg: 2
-        activation = ""  # eg: /neurospin/dico/zsun/3T_tfMRI_conversion/
-        curAct = "MOTOHD" # eg: language
+########################################################    WIP projection    ########################################################
+##########################################################################################################
+####################################   preparing projection MA ima   #####################################
+##########################################################################################################
+    if callProjectionPrepMA_ima: 
+        filterOut = config['functions']['callProjectionPrepMA_ima']['filterOut']
+        scale = config['functions']['callProjectionPrepMA_ima']['scale']       
+        typeIso = config['functions']['callProjectionPrepMA_ima']['typeIso']           
+        numNeig = config['functions']['callProjectionPrepMA_ima']['numNeig'] 
+        typeDist = config['functions']['callProjectionPrepMA_ima']['typeDist']
+        numDim = config['functions']['callProjectionPrepMA_ima']['numDim']
+        numCoord = config['functions']['callProjectionPrepMA_ima']['numCoord']   
 
-        namesFile = path+os.sep+curRegion+os.sep+"bck"+os.sep+"subjNames_bck.txt"
-        new_subjects = curTools.retrieveNames(namesFile)      # list of subjects of the projection
-        old_weight_file = "/path/to/original_norm_weight.csv"
-        output_file = "/path/to/subset_norm_weight.csv"
+        projectionType = config['functions']['callProjectionPrepMA_ima']['projectionType']       
+        subjectRescale = config['functions']['callProjectionPrepMA_ima']['subjectRescale']
+        sourceRegionPath = config['functions']['callProjectionPrepMA_ima']['sourceRegionPath']
+        targetRegionPath = config['functions']['callProjectionPrepMA_ima']['targetRegionPath']
+        sourceRegion = config['functions']['callProjectionPrepMA_ima']['sourceRegion']
+        targetRegion = config['functions']['callProjectionPrepMA_ima']['targetRegion']   
+        projectionDim = config['functions']['callProjectionPrepMA_ima']['projectionDim']  
+            
+        suffix = "" if filterOut else "_keepOut" # Set the suffix once for the whole block
+        weight_file = (  # Define the FINAL weight file path (Target for re-normalization)
+            f"{generalRoot}{targetRegionPath}/{targetRegion}/Isomap/"
+            f"spam_{projectionType}_Coord{numCoord}isomap{typeIso}{targetRegion}"
+            f"k{numNeig}d{numDim}_{projectionDim}_{typeDist}scale{scale}{suffix}.txt"
+        )
+        if subjectRescale: # Handle Subject Rescaling (Re-normalization)
+            namesFile = f"{generalRoot}{sourceRegionPath}/{sourceRegion}/bck/subjNames_bck.txt" # current names
+            subjects = curTools.retrieveNames(namesFile)  # Identify subjects
+            new_subjects = curTools.get_add_flip_to_Rsubjects(subjects)
+            print(f"Subjects for projection: {new_subjects}")
 
-        # Run the re-normalization
-        new_weight_df = curIsomapU.getSubsetNameNormWeight(old_weight_file, new_subjects, output_file)
+            old_weight_file = (  # Build the OLD weight file path (Source for re-normalization)
+                f"{generalRoot}{targetRegionPath}/{targetRegion}/Isomap/"
+                f"spamCoord{numCoord}isomap{typeIso}{targetRegion}"
+                f"k{numNeig}d{numDim}_{projectionDim}_{typeDist}scale{scale}{suffix}.txt"
+            )
+            print(f"Starting Re-normalization from: {old_weight_file}") # Perform the re-normalization
+            new_weight_df = curIsomapU.getSubsetNameNormWeight(old_weight_file, new_subjects, weight_file)
+            print("✅ Re-normalization complete.")
 
-        print("Re-normalization complete.")
-################################################################################################################
+        # Generate the source images
+        target_file_name = f"{generalRoot}{targetRegionPath}/{targetRegion}/Isomap/mincenterList{targetRegion}.txt"
+        target_name = curTools.getCenterSubj(target_file_name, rankPosition=1)
+        df_tal_L_target_voirT_name = ( # ICP transform file path
+            f"{generalRoot}{targetRegionPath}/{targetRegion}/ICP/"
+            f"transRotMat_tal_L_{target_name}_voirT_{targetRegion}.txt"
+        )
+        # Output directory for images
+        out_ima_dir = f"{generalRoot}{targetRegionPath}/{targetRegion}/ima_{projectionType}_{targetRegion}/"
+        if not os.path.exists(out_ima_dir):
+            os.makedirs(out_ima_dir)
+        # Run Prep MA Ima
+        sourcePath = f"{generalRoot}{sourceRegionPath}"
+        print(f"🚀 Preparing images in: {out_ima_dir}")
+        curMA_basic_U.prep_MA_ima(sourcePath, sourceRegion, weight_file, out_ima_dir, df_tal_L_target_voirT_name)
+        
+
+##########################################################################################################
+#################################   generating projection MA ima   #######################################
+##########################################################################################################
+    if callProjectionGenMA_ima:   
+        filterOut = config['functions']['callProjectionGenMA_ima']['filterOut']
+        scale = config['functions']['callProjectionGenMA_ima']['scale']        
+        typeIso = config['functions']['callProjectionGenMA_ima']['typeIso']           
+        numNeig = config['functions']['callProjectionGenMA_ima']['numNeig'] 
+        typeDist = config['functions']['callProjectionGenMA_ima']['typeDist']
+        numDim = config['functions']['callProjectionGenMA_ima']['numDim']
+        numCoord = config['functions']['callProjectionGenMA_ima']['numCoord']
+
+        projectionType = config['functions']['callProjectionGenMA_ima']['projectionType']      
+        targetRegionPath = config['functions']['callProjectionGenMA_ima']['targetRegionPath']
+        targetRegion = config['functions']['callProjectionGenMA_ima']['targetRegion']   
+        projectionDim = config['functions']['callProjectionGenMA_ima']['projectionDim']  
+
+
+        target_file_name = f"{generalRoot}{targetRegionPath}/{targetRegion}/Isomap/mincenterList{targetRegion}.txt"
+        target_name = curTools.getCenterSubj(target_file_name, rankPosition=1)
+        f_tal_L_target_voirT_name = ( # ICP transform file path
+            f"{generalRoot}{targetRegionPath}/{targetRegion}/ICP/"
+            f"transRotMat_tal_L_{target_name}_voirT_{targetRegion}.txt" )
+        # input directory for images
+        in_ima_dir = f"{generalRoot}{targetRegionPath}/{targetRegion}/ima_{projectionType}_{targetRegion}/"
+
+        suffix = "" if filterOut else "_keepOut"
+        weight_file = ( f"{generalRoot}{targetRegionPath}/{targetRegion}/Isomap/"
+                        f"spam_{projectionType}_Coord{numCoord}isomap{typeIso}{targetRegion}"
+                        f"k{numNeig}d{numDim}_{projectionDim}_{typeDist}scale{scale}{suffix}.txt" )
+        outMA_ima_dir = ( f"{generalRoot}{targetRegionPath}/{targetRegion}/imaMA_{projectionType}"
+                          f"_Coord{numCoord}isomap{typeIso}{curRegion}"
+                          f"k{numNeig}d{numDim}_{projectionDim}_{typeDist}scale{scale}{suffix}/" ) 
+        if not os.path.exists(outMA_ima_dir):
+            os.makedirs(outMA_ima_dir)
+
+        print(outMA_ima_dir)
+        curMA_basic_U.compose_MA_ima(weight_file,in_ima_dir,outMA_ima_dir)
+
+
+###################################################################################################
+#########################################   projection MA to mesh   ##########################################
+###################################################################################################
+    if callProjectionGenMA_mesh:   
+        filterOut = config['functions']['callProjectionGenMA_mesh']['filterOut']
+        scale = config['functions']['callProjectionGenMA_mesh']['scale']        
+        typeIso = config['functions']['callProjectionGenMA_mesh']['typeIso']           
+        numNeig = config['functions']['callProjectionGenMA_mesh']['numNeig'] 
+        typeDist = config['functions']['callProjectionGenMA_mesh']['typeDist']
+        numDim = config['functions']['callProjectionGenMA_mesh']['numDim']
+        numCoord = config['functions']['callProjectionGenMA_mesh']['numCoord']
+                        
+        smoothingFactor = config['functions']['callProjectionGenMA_mesh']['smoothingFactor']
+        coordScale = config['functions']['callProjectionGenMA_mesh']['coordScale']        
+        weightScale = config['functions']['callProjectionGenMA_mesh']['weightScale']           
+        aimsThreshold = config['functions']['callProjectionGenMA_mesh']['aimsThreshold']     
+
+        projectionType = config['functions']['callProjectionGenMA_mesh']['projectionType']      
+        targetRegionPath = config['functions']['callProjectionGenMA_mesh']['targetRegionPath']
+        targetRegion = config['functions']['callProjectionGenMA_mesh']['targetRegion']   
+        projectionDim = config['functions']['callProjectionGenMA_mesh']['projectionDim']    
+
+        inv_file = f"{generalRoot}{targetRegionPath}/voirTalairachInv.trm"
+        if not os.path.exists(inv_file):
+            with open(inv_file, 'w') as file:
+                lines = ['-110.0 -90.0 -90.0', '1.0 0.0 0.0', '0.0 1.0 0.0', '0.0 0.0 1.0']
+                file.write('\n'.join(lines))
+        
+        target_file_name = f"{generalRoot}{targetRegionPath}/{targetRegion}/Isomap/mincenterList{targetRegion}.txt"
+        target_name = curTools.getCenterSubj(target_file_name, rankPosition=1)
+        targetMesh_path = f"{generalRoot}{targetRegionPath}/{targetRegion}/mesh_{target_name}/"
+
+        df_tal_L_target_voirT_name = ( # ICP transform file path
+            f"{generalRoot}{targetRegionPath}/{targetRegion}/ICP/"
+            f"transRotMat_tal_L_{target_name}_voirT_{targetRegion}.txt" )
+
+
+        suffix = "" if filterOut else "_keepOut"
+        weight_file = ( f"{generalRoot}{targetRegionPath}/{targetRegion}/Isomap/"
+                        f"spam_{projectionType}_Coord{numCoord}isomap{typeIso}{targetRegion}"
+                        f"k{numNeig}d{numDim}_{projectionDim}_{typeDist}scale{scale}{suffix}.txt" )
+        inMA_ima_dir = ( f"{generalRoot}{targetRegionPath}/{targetRegion}/imaMA_{projectionType}"
+                          f"_Coord{numCoord}isomap{typeIso}{curRegion}"
+                          f"k{numNeig}d{numDim}_{projectionDim}_{typeDist}scale{scale}{suffix}/" ) 
+        outMA_mesh_dir = ( f"{generalRoot}{targetRegionPath}/{targetRegion}/meshMA_{projectionType}"
+                          f"_Coord{numCoord}isomap{typeIso}{curRegion}"
+                          f"k{numNeig}d{numDim}_{projectionDim}_{typeDist}scale{scale}{suffix}/" ) 
+        if not os.path.exists(outMA_mesh_dir):
+            os.makedirs(outMA_mesh_dir)
+
+        print(weight_file)
+        print(inMA_ima_dir)
+        print(outMA_mesh_dir)
+        print(inv_file)
+        print(targetMesh_path)
+        curMA_basic_U.compose_MA_mesh(weight_file,inMA_ima_dir,inv_file,smoothingFactor,coordScale,outMA_mesh_dir,
+                                      targetMesh_path,aimsThreshold,target_name)
+
+
+
+
+
+
 
 
 
