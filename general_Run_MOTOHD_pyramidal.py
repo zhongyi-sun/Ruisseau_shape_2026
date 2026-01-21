@@ -1067,7 +1067,8 @@ def main(argv):
                           f"k{numNeig}d{numDim}_{projectionDim}_{typeDist}scale{scale}{suffix}/" ) 
         outMA_mesh_dir = ( f"{generalRoot}{targetRegionPath}/{targetRegion}/meshMA_{projectionType}"
                           f"_Coord{numCoord}isomap{typeIso}{curRegion}"
-                          f"k{numNeig}d{numDim}_{projectionDim}_{typeDist}scale{scale}{suffix}/" ) 
+                          f"k{numNeig}d{numDim}_{projectionDim}_{typeDist}scale{scale}" 
+                          f"_sp{coordScale}_sm{smoothingFactor}_t{aimsThreshold}{suffix}/" ) 
         if not os.path.exists(outMA_mesh_dir):
             os.makedirs(outMA_mesh_dir)
 
