@@ -493,20 +493,16 @@ class MA_basic_tools:
             tempSpamMesh = f"{outMA_mesh_dir}temp{idx}.mesh"
             
             print(f"Cur ima.......................{curSpamIma}")
-
             # --- 3. EXECUTE AIMS COMMANDS ---
             # Gaussian Smoothing
             print('....................Gaussian...................')
             os.system(f'AimsGaussianSmoothing -i {curSpamIma} -o {curSpamGZ} -x {smoothingFactor} -y {smoothingFactor} -z {smoothingFactor}')
-            
             # Thresholding
             print('....................threshold.....................')
             os.system(f'AimsThreshold -i {curSpamGZ} -o {curSpamGT} -b -t {aimsThreshold}')
-            
             # Meshing
             print('....................mesh.....................')       
             os.system(f'AimsMesh -i {curSpamGT} -o {tempSpamMesh} --deciMaxError 0.5 --deciMaxClearance 1 --smooth --smoothIt 20')
-            
             # Concatenate/Finalize Mesh
             matching_files = glob.glob(f"{outMA_mesh_dir}temp{idx}*.mesh")
             if len(matching_files) > 0:
@@ -517,10 +513,8 @@ class MA_basic_tools:
                 # Cleanup and skip transformation steps for this coordinate
                 #os.system(f'rm {outMA_mesh_dir}g*') 
                 #continue
-
             # Cleanup intermediate mesh files
             os.system(f'rm {outMA_mesh_dir}temp*.mesh {outMA_mesh_dir}temp*.mesh.minf')
-
             # --- 4. TRANSFORMATIONS (Space & Coordinates) ---
             # Move to inv_voitT space
             self.cur_MA_tools.meshTrans(curSpamMesh, outMA_mesh_dir, curSpamMesh, trans=inv_file)
@@ -531,7 +525,6 @@ class MA_basic_tools:
             coordMeshFlip = f"{outMA_mesh_dir}ISO_inverse_spam{idx}.mesh"
             self.cur_MA_tools.meshTrans(curSpamMesh, outMA_mesh_dir, fileOutName=coordMesh, trans=trm_file)
             self.cur_MA_tools.meshTrans(curSpamMesh, outMA_mesh_dir, fileOutName=coordMeshFlip, trans=trm_file_flip)
-
             # --- 5. REPRESENTATIVE SUBJECTS ---
             if coordSubj[i] != 'none':
                 subj = coordSubj[i]
@@ -543,28 +536,23 @@ class MA_basic_tools:
                 f_smooth = f"{outMA_mesh_dir}to_coord_Smooth_{subj}.mesh"
                 f_smooth_flip = f"{outMA_mesh_dir}to_coord_inverse_Smooth_{subj}.mesh"
                 f_target_smooth = f"{outMA_mesh_dir}to_{target_name}_Smooth_{subj}.mesh"
-
                 # Apply Transformations
                 self.cur_MA_tools.meshTrans(curCoordMesh, outMA_mesh_dir, f_out, trans=trm_file)
                 self.cur_MA_tools.meshTrans(curCoordMesh, outMA_mesh_dir, f_out_flip, trans=trm_file_flip)
-
                 # Smoothing Iterations
                 self.cur_MA_tools.meshSmooth(curCoordMesh, outMA_mesh_dir, fileOutName=f_target_smooth, numIteration='200')
                 self.cur_MA_tools.meshSmooth(f_out, outMA_mesh_dir, fileOutName=f_smooth, numIteration='200')
                 self.cur_MA_tools.meshSmooth(f_out_flip, outMA_mesh_dir, fileOutName=f_smooth_flip, numIteration='200')
-
                 # Cleanup unsmoothed versions
                 for f in [f_out, f_out_flip]:
                     if os.path.exists(f): os.remove(f)
-                
                 os.system(f'rm {outMA_mesh_dir}*.minf')
-
             # Final cleanup for the loop iteration
             os.system(f'rm {trm_file} {trm_file_flip}')
 
 
     ##########################################################################################################################
-    def compose_MA_mesh_old(self,weightName,outMA_ima_dir,inv_file,smoothingFactor,coordScale,outMA_mesh_dir,targetMesh_path,aimsThreshold,target_name):
+    def compose_MA_mesh_legacy(self,weightName,outMA_ima_dir,inv_file,smoothingFactor,coordScale,outMA_mesh_dir,targetMesh_path,aimsThreshold,target_name):
         """
             writing the MA meshes
         """
