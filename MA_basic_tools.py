@@ -456,7 +456,7 @@ class MA_basic_tools:
 
 
 
-
+    ## compare to compose_MA_legacy, the string formatting is using fstrings, the rest of the functionality remains the same ##
     def compose_MA_mesh(self, weightName, outMA_ima_dir, inv_file, smoothingFactor, coordScale, outMA_mesh_dir, targetMesh_path, aimsThreshold, target_name):
         """
         Writing the MA meshes using standard Python formatting.

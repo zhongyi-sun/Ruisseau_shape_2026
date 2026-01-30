@@ -298,10 +298,6 @@ class isomapcoord:
         dimDist.columns = coord_Subj_list
         normDist.index = subjNames
         normDist.columns = coord_Subj_list       
-##        dimDist.to_csv(noneNormWeightName,sep=' ',index=True)
-##        normDist.to_csv(oriNormWeightName,sep=' ',index=True)
-#        dimDist.to_csv(noneNormWeightName,sep=' ',header=coord_Subj_list)
-#        normDist.to_csv(oriNormWeightName,sep=' ',header=coord_Subj_list)
         dimDist.to_csv(noneNormWeightName,header=coord_Subj_list)
         normDist.to_csv(oriNormWeightName,header=coord_Subj_list)
 
@@ -309,18 +305,13 @@ class isomapcoord:
     def getNoneNormWeightOriWeight_oriFormat(self,curDistName,isomapName,coordFileName,noneNormWeightName,oriNormWeightName,numCoord,scale):
         """ get the non-normalized weight given an isomap file
         """
-##        curIso = pd.read_csv(isomapName,sep=' ',index_col=0,header=None) # problem! one line of numbers written as colnames
-#        curIso = pd.read_csv(isomapName,sep=' ',index_col=0) 
         curIso = pd.read_csv(isomapName,index_col=0) 
-#        curDist = pd.read_csv(curDistName,sep=' ',index_col=0)
         curDist = pd.read_csv(curDistName,index_col=0)
         
 
         subjNames = curIso.index
         numSubj = curIso.shape[0]
         curCoord = np.loadtxt(coordFileName)
-        #print(curIso)
-        #print(curCoord)
         minCoord = curCoord.min()
         maxCoord = curCoord.max()
         curVar = (((maxCoord - minCoord)/(numCoord -1)) * scale) ** 2     
@@ -329,8 +320,6 @@ class isomapcoord:
         curDistToCoord = isoTile - coordTile
         curDistToCoord = np.abs(curDistToCoord)
         dimDist = np.exp(-curDistToCoord**2/curVar)
-        #print()
-        #print(dimDist)
 
         # get normalized weight
         sumCoordDist = dimDist.sum(axis=0)
@@ -344,8 +333,6 @@ class isomapcoord:
         dimDist.columns = curCoord
         normDist.index = subjNames
         normDist.columns = curCoord
-#        dimDist.to_csv(noneNormWeightName,sep=' ',index=False)
-#        normDist.to_csv(oriNormWeightName,sep=' ',index=False)
         dimDist.to_csv(noneNormWeightName,index=False)
         normDist.to_csv(oriNormWeightName,index=False)
 
@@ -424,21 +411,22 @@ class isomapcoord:
         return curList, pbList
     
 
-    ################################################  WIP  #################################################
-    ########################################################################################################
+    ################################################  Projection functionality  #################################################
     def getSubsetNameNormWeight(self, oldWeightPath, newSubjNames, newWeightSavePath):
         """
-        Filters and re-normalizes weights. 
+        Given an old weight and a new subject set smaller or equal to the old set, filters and re-normalizes weights. 
+        Filters out the subset of old weight containing only the new subjects, then normalize it by deviding the new subset
+        by the sum of its columns
         Maintains bit-for-bit identity if the subject list is unchanged.
         """
-        # 1. Load with index name preservation
+        # Load with index name preservation
         df_old = pd.read_csv(oldWeightPath, index_col=0)
         
-        # 2. Filter subjects
+        # Filter subjects
         valid_names = [name for name in newSubjNames if name in df_old.index]
         df_new = df_old.loc[valid_names].copy()
         
-        # 3. Smart Re-normalization
+        # Smart Re-normalization
         # Calculate sums for each column
         column_sums = df_new.sum(axis=0)
         # Check if actually need to re-normalize.
@@ -450,7 +438,7 @@ class isomapcoord:
             print("Subject list unchanged or already normalized. Skipping division to preserve precision.")
             df_normalized = df_new
 
-        # 4. Save with Strict Formatting
+        # Save with Strict Formatting
         # Use float_format to control the number of digits written to the CSV
         df_normalized.to_csv(
             newWeightSavePath, 
