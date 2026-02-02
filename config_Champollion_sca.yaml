@@ -1,0 +1,195 @@
+global:
+  callPrepBckTal: false           # default true
+  call_Add_PrepBckTal: false     # verify function param
+  
+  #################  New calcDist functionality  ###############
+  callCalcDist_bySubject: false
+  
+  mode: "cluster_job"  # local_parallel, change this to "cluster_job" for cluster submission   
+  # --- Specific Parameters for Local Parallelism ---
+  local_config:
+    num_cores: 8
+  # --- Specific Parameters for Cluster Job (Optional) ---
+  # When mode: "cluster_job", Soma/the workflow definition script sets the index, 
+  # for testing a single index locally.
+  cluster_config:
+    id: 0
+  
+  #####################  OLD calcDist functionality  ######################
+  callCalcDist_Legacy: false            # non-parallel calculation!
+  callCalcDistParallel_Legacy: false     # default false
+  constructICPres_Legacy: false          # default false
+
+  #########################  New data structure  ############################
+  constructICPres: false          # default true
+
+  call_Add_Dist: false           # verify function param
+  call_Add_DistRecompose: false  # verify function param
+  
+  
+  symDist_Legacy: false                  # default false
+  outlierRemovalGetCenter_Legacy: false  # default false
+  outlierRemovalGetCenter: false         # default true  
+
+  callGetIsomap: false            # default true, verify function param
+  callGetCoordWeight: false       # default true, verify function param
+  callGetNormWeight: false       # default false, verify function param, only to generate new new normalized weight
+
+  callPrepICPTrm: false           # default true
+  call_Add_TargetMesh: false     # verify function param
+      
+  callGenICPMesh: true  # default true, must be true if any one of the specific save_mesh function in the group is true
+  saveOriMesh: true     # default true, must run once
+  saveTalLMesh: false   # default false
+  saveRmesh: false      # Always False for now, NOT implemented ye
+  saveTalMesh: false    # default false
+  saveTargetMesh: true  # default true   
+
+  callPrepMA_ima: false          # default true, verify function param
+  call_Add_PrepMA_ima: false    # verify function param
+      
+  callGenISOMesh: false          # default true, verify function param
+  callGenMA_ima: false           # default true, verify function param
+  callGenMA_mesh: false          # default true, verify function param
+
+  removeICPres: false
+  removeJson: false             # default false, after verification
+
+  #generalRoot: /media/sf_C_DRIVE/A_joyCODE/DEV_LIN     # virtual machine
+  generalRoot: /home/sulci/JS/A_joyCODE/DEV_LIN       # local
+  curBase: /AtrilBioscaCermoi_time1
+  curRegion: FPOCalCu
+    
+functions:
+  call_Add_PrepBckTal:
+    old_base_1: /relabel_time1_ctl_sca1 #/AtrilBioscaCermoi_time1 #/Base62
+    old_base_2: /relabel_time2_ctl_sca1 #/ctl_sca1_time2 #/ampExt
+    new_base: /relabel_time1_2_ctl_sca1 #/ABC_time1_ctl_sca1_time2  #/ampExt
+    old_db_version: V2 #v1  
+    new_db_version: V2 #v2
+        
+  constructICPres:
+    numTransRot: 12
+       
+  call_Add_Dist:
+    old_base_1: /relabel_time1_ctl_sca1 #/AtrilBioscaCermoi_time1 #/Base62
+    old_base_2: /relabel_time2_ctl_sca1 #/ctl_sca1_time2 #/ampExt
+    new_base: /relabel_time1_2_ctl_sca1 #/ABC_time1_ctl_sca1_time2  #/Base62_ampExt
+               
+  call_Add_DistRecompose:
+    old_base_1: /relabel_time1_ctl_sca1 #/AtrilBioscaCermoi_time1 #/Base62
+    old_base_2: /relabel_time2_ctl_sca1 #/ctl_sca1_time2 #/ampExt
+    new_base: /relabel_time1_2_ctl_sca1 #/ABC_time1_ctl_sca1_time2  #/Base62_ampExt
+    old_db_version: v2    
+    new_db_version: v2
+    numTransRot: 12
+    
+  outlierRemovalGetCenter:
+    curOutMethod: MAD
+    sdFactor: 3 
+
+  callGetIsomap:
+    filterOut: false
+    typeIso: Cmds 
+    numNeig: 30            # 10 by default, change to test effect, 17 for control only
+    typeDist: min          
+    numDim: 3
+
+  callGetCoordWeight:
+    filterOut: false
+    typeIso: Cmds 
+    numNeig: 30            # 10 by default, change to test effect, 17 for control only
+    typeDist: min            
+    numDim: 3
+    numCoord: 10 
+    scale: 1               # weight
+    coordStep: 100         # coord specific
+    extremityPercent: True # extremity decided by percentage if true, otherwise by minimum number of subjects      
+    coordPercent: 0.01     # coord specific, default 0.03
+    minExtremitySubject: 4 # coord specific, default 4
+    distThresh: 0.4        # coord specific, default 0.4
+
+  callGetNormWeight:
+    filterOut: false
+    typeIso: Cmds   
+    numNeig: 30            # 10 by default, change to test effect, 17 for control only  
+    typeDist: min 
+    numDim: 3        
+    numCoord: 10
+    scale: 1
+    
+  call_Add_TargetMesh:
+    old_base_1: /Base62
+    old_base_2: /ampExt  
+    new_base: /Base62_ampExt
+    old_db_version: v1
+    new_db_version: v2
+    
+  callGenISOMesh:
+    filterOut: false
+    typeIso: Cmds   
+    numNeig: 30            # 10 by default, change to test effect, 17 for control only  
+    typeDist: min 
+    numDim: 3        
+    numCoord: 10
+    scale: 1    
+    coordScale: 500
+    
+  callPrepMA_ima:
+    filterOut: false
+    typeIso: Cmds
+    numNeig: 30            # 10 by default, change to test effect, 17 for control only  
+    typeDist: min
+    numDim: 3      
+    numCoord: 10
+    scale: 1 
+           
+  call_Add_PrepMA_ima:
+    filterOut: true
+    typeIso: Cmds
+    numNeig: 30            # 10 by default, change to test effect, 17 for control only   
+    typeDist: min
+    numDim: 3
+    numCoord: 10
+    scale: 1     
+    old_base_1: /Base62
+    old_base_2: /ampExt
+    new_base: /Base62_ampExt
+
+  callGenMA_ima:
+    filterOut: false
+    typeIso: Cmds
+    numNeig: 30            # 10 by default, change to test effect, 17 for control only   
+    typeDist: min
+    numDim: 3         
+    numCoord: 10
+    scale: 1
+            
+  callGenMA_mesh:
+    filterOut: false
+    typeIso: Cmds
+    numNeig: 30            # 10 by default, change to test effect, 17 for control only    
+    typeDist: min
+    numDim: 3
+    numCoord: 10
+    scale: 1   
+    smoothingFactor: 2.0  # -o
+    coordScale: 500       # -e for regulating spacing   
+    weightScale: 1        # -l                 
+    aimsThreshold: 0.06   # -t
+
+
+      
+        
+    
+
+
+
+
+
+
+
+
+
+
+
