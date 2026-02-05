@@ -1,11 +1,12 @@
 global:
+  callChangeSubjPrefix: false    # True if the input shape csv has no prefix 'L' or 'flip-R' for index
   callGetSubjNames: false       # default false, for projecting one base to another 
   callGetProjection: false      # default false, for projecting one base to another  
   callGetWeight: false          # default true, verify function param
   callPrepProjectionMesh: false # default false, for projecting one base to another    
-  callGetMeshSpread: false      # default true, verify function param
+  callGetMeshSpread: true      # default true, verify function param
 
-  callGenMA_ima: true          # default true, verify function param
+  callGenMA_ima: false          # default true, verify function param
   callGenMA_mesh: false         # default true, verify function param 
 
   #generalRoot: /media/sf_D_DRIVE/A_joyCODE/DEV_LIN
@@ -14,6 +15,11 @@ global:
   curRegion: FPOCalCu # CSSyl
     
 functions:
+  callChangeSubjPrefix:
+    input_csv: /AtrilBioscaCermoi_time1/FPOCalCu/shape_select/FPO-SCu-ScCal_right_name07-15-26--174_embeddings_iso_u.csv
+    output_csv: /AtrilBioscaCermoi_time1/FPOCalCu/shape_select/FPO-SCu-ScCal_right_name07-15-26--174_embeddings_iso_u_prefixed.csv
+    prefix: flip-R
+
   callGetSubjNames:
   #  curBaseOne: /testHCP10
   #  curBaseTwo: /testAmp20
@@ -56,10 +62,14 @@ functions:
                
     #################   isomap, max, dim 5, coord 8   #################                                  
     shapeInDir: /AtrilBioscaCermoi_time1/FPOCalCu/shape_select
-    inName: FPOCalCu_iso_u_max_right_manhattan_SCA_2.csv
-    outName: FPOCalCu_maxRightManhattan_col_IsoDim3Neig5_weight.txt
+    #inName: FPOCalCu_iso_u_max_right_manhattan_SCA_2.csv  #             # Ruisseau results 
+    inName: FPO-SCu-ScCal_right_name07-15-26--174_embeddings_iso_u_prefixed.csv   # Champollion results
+    #outName: FPOCalCu_maxRightManhattan_col_IsoDim3Neig5_weight.txt     # Ruisseau results 
+    outName: FPOCalCu_RightManhattan_col_IsoDim3Neig5_weight.txt       # Champollion results
     shapeCol: iso_dim3_neig5  
-    rewriteShape: FPOCalCu_maxRightManhattan_col_IsoDim3Neig5.txt    
+    #rewriteShape: FPOCalCu_maxRightManhattan_col_IsoDim3Neig5.txt       # Ruisseau results
+    rewriteShape: FPOCalCu_RightManhattan_col_IsoDim3Neig5.txt       # Champollion results
+      
     numCoord: 8      
     
                                 
@@ -98,9 +108,12 @@ functions:
     coordScale: 800
     bckInDir: /AtrilBioscaCermoi_time1/FPOCalCu/mesh_L001020HG_E1
     shapeInDir: /AtrilBioscaCermoi_time1/FPOCalCu/shape_select
-    inName: FPOCalCu_maxRightManhattan_col_IsoDim3Neig5.txt
-    outDir: /maxRightManhattan_col_IsoDim3Neig5  
-    curWeightFile: /AtrilBioscaCermoi_time1/FPOCalCu/shape_select/FPOCalCu_maxRightManhattan_col_IsoDim3Neig5_weight.txt
+    #inName: FPOCalCu_maxRightManhattan_col_IsoDim3Neig5.txt  # Ruisseau 
+    #outDir: /maxRightManhattan_col_IsoDim3Neig5  # Ruisseau
+    #curWeightFile: /AtrilBioscaCermoi_time1/FPOCalCu/shape_select/FPOCalCu_maxRightManhattan_col_IsoDim3Neig5_weight.txt # Ruisseau
+    inName: FPOCalCu_RightManhattan_col_IsoDim3Neig5.txt  # Champollion 
+    outDir: /RightManhattan_col_IsoDim3Neig5  # Champollion
+    curWeightFile: /AtrilBioscaCermoi_time1/FPOCalCu/shape_select/FPOCalCu_RightManhattan_col_IsoDim3Neig5_weight.txt # Champollion
     numCoord: 8
         
                                                                                 
@@ -153,8 +166,8 @@ functions:
     targetMesh_path: /AtrilBioscaCermoi_time1/FPOCalCu/mesh_L001020HG_E1
     target_name: L001020HG_E1
        
-    coordScale: 800       # -e for regulating spacing, 500 for CSSyl, 800 for CSpreCS
+    coordScale: 600       # -e for regulating spacing, 500 for CSSyl, 800 for CSpreCS
     smoothingFactor: 3.0  # -o, default to 2.0              
-    aimsThreshold: 0.6   # -t # CSSyl default to 0.06
+    aimsThreshold: 0.045   # -t # CSSyl default to 0.06
        
     
