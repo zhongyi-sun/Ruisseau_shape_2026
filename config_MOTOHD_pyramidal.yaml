@@ -51,7 +51,7 @@ global:
   callGenMA_ima: false           # default true, verify function param
   callGenMA_mesh: false          # default true, verify function param
 
-  ###########################################  WIP projection  ##########################################
+  ###########################################  functionality projection  ##########################################
   callProjectionPrepMA_ima: true
   callProjectionGenMA_ima: false
   callProjectionGenMA_mesh: false
@@ -60,8 +60,8 @@ global:
   removeICPres: false
   removeJson: false             # default false, after verification
 
-  generalRoot: /media/sf_C_DRIVE/A_joyCODE/DEV_LIN     # virtual machine
-  #generalRoot: /home/sulci/JS/A_joyCODE/DEV_LIN       # local
+  #generalRoot: /media/sf_C_DRIVE/A_joyCODE/DEV_LIN     # virtual machine
+  generalRoot: /home/sulci/JS/A_joyCODE/DEV_LIN       # local, home/sulci/JS/A_joyCODE/DEV_LIN
   curBase: /test_CST_MOTOHD
   curRegion: CST
     
@@ -162,22 +162,23 @@ functions:
     new_base: /Base62_ampExt
 
 
-  ##############################################  WIP  projection  ############################################
+  ##############################################  Functionality  projection  ############################################
   callProjectionPrepMA_ima:  
     filterOut: false
     typeIso: Cmds
     numNeig: 30            # 10 by default, change to test effect, 17 for control only  
-    typeDist: min
-    numDim: 3      
-    numCoord: 10
+    typeDist: max
+    numDim: 5      
+    numCoord: 8
     scale: 1 
-    projectionType: CSTMOTOHD
-    subjectRescale: true  # true if source subject set is smaller than the target subject set
-    sourceRegionPath:  /test_CST_MOTOHD # Note: use generalRoot defined above
-    targetRegionPath:  /MOTOHD         # Note: use generalRoot defined above
-    sourceRegion: CST
-    targetRegion: CSSyl
-    projectionDim: 1
+    projectionType: CSSyltoCST_MOTOHD    # first test CSTMOTOHD
+    subjectRescale: true                # default true, if source subject set is smaller than the target subject set
+                                         #           or if the weight file with the right name for MA prep doesn't exist
+    sourceRegionPath: /MOTOHD            # /test_CST_MOTOHD, Note that using generalRoot defined above to concatenate to this
+    targetRegionPath: /test_CST_MOTOTHD  # /MOTOHD,          Note that using generalRoot defined above to concatenate to this
+    sourceRegion: CSSyl       # CST for CST_to_CSSyl_proj, CSSyl for CSSyl_to_CST_proj 
+    targetRegion: CST         # CSSyl for CST_to_CSSyl_proj, CST for CSSyl_to_CST_proj 
+    projectionDim: 5
 
   callProjectionGenMA_ima:
     filterOut: false
@@ -208,7 +209,7 @@ functions:
     targetRegionPath:  /MOTOHD         # Note: use generalRoot defined above
     targetRegion: CSSyl
     projectionDim: 1
-##############################################  WIP  projection  ############################################
+##############################################  Functionality  projection  ############################################
 
 
 
