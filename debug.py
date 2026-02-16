@@ -1,6 +1,6 @@
 import os
 
-full_path = "/home/sulci/JS/A_joyCODE/DEV_LIN/test_CST_MOTOHD/CST/ICP/transRotMat_tal_L_flip-R011160MHU_voirT_CST.tx"
+full_path = "/home/sulci/JS/A_joyCODE/DEV_LIN/AtrilBioscaCermoi_time1/Calc/mesh_flip_R00030CA_V1/flip-R001079LP_E1.mesh"
 
 def debug_path(p):
     parts = p.split('/')

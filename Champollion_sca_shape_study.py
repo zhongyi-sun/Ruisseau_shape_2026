@@ -15,7 +15,7 @@ from general_tools import general_tools
 
 def main(argv):
     #curYaml = 'config_ataxia_shape_relabel_redo.yaml' # 'config_ataxia_shape.yaml'
-    curYaml = 'config_Champollion_sca_shape.yaml' # 'config_ataxia_shape.yaml'
+    curYaml = 'Champollion_sca_config_shape_study.yaml' # 'config_ataxia_shape.yaml'
     with open(curYaml, 'r') as file:
         config = yaml.safe_load(file)
     curTools = general_tools(1)

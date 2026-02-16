@@ -37,14 +37,14 @@ global:
   callPrepICPTrm: false           # default true
   call_Add_TargetMesh: false     # verify function param
       
-  callGenICPMesh: true  # default true, must be true if any one of the specific save_mesh function in the group is true
-  saveOriMesh: true     # default true, must run once
+  callGenICPMesh: false  # default true, must be true if any one of the specific save_mesh function in the group is true
+  saveOriMesh: false     # default true, must run once
   saveTalLMesh: false   # default false	
   saveRmesh: false      # Always False for now, NOT implemented ye
   saveTalMesh: false    # default false
-  saveTargetMesh: true  # default true   
+  saveTargetMesh: false  # default true   
 
-  callPrepMA_ima: false          # default true, verify function param
+  callPrepMA_ima: true          # default true, verify function param
   call_Add_PrepMA_ima: false    # verify function param
       
   callGenISOMesh: false          # default true, verify function param
