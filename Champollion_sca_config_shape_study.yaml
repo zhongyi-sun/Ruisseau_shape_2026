@@ -1,0 +1,239 @@
+global:
+  callChangeSubjPrefix: false    # True if the input shape csv has no prefix 'L' or 'flip-R' for index
+  callGetSubjNames: false       # default false, for projecting one base to another 
+  callGetProjection: false      # default false, for projecting one base to another  
+  callGetWeight: true          # default true, verify function param
+  callPrepProjectionMesh: false # default false, for projecting one base to another    
+  callGetMeshSpread: true      # default true, verify function param
+
+  callGenMA_ima: true          # default true, verify function param
+  callGenMA_mesh: true         # default true, verify function param 
+
+  #generalRoot: /media/sf_D_DRIVE/A_joyCODE/DEV_LIN
+  generalRoot: /home/sulci/JS/A_joyCODE/DEV_LIN 
+  #generalRoot: /media/sulci/Extreme Pro/JS/A_joyCODE/DEV_LIN
+  curRegion: Calc # CSSyl, FPOCalCu, Calc
+    
+functions:
+  callChangeSubjPrefix:
+    input_csv: /AtrilBioscaCermoi_time1/FPOCalCu/shape_select/FPO-SCu-ScCal_right_name07-15-26--174_embeddings_iso_u.csv
+    output_csv: /AtrilBioscaCermoi_time1/FPOCalCu/shape_select/FPO-SCu-ScCal_right_name07-15-26--174_embeddings_iso_u_prefixed.csv
+    prefix: flip-R
+
+  callGetSubjNames:
+  #  curBaseOne: /testHCP10
+  #  curBaseTwo: /testAmp20
+    curBaseOne: /ampExt
+    curBaseTwo: ''
+
+  callGetProjection:
+    curBaseTwo: /testAmp20
+    projectFrom: HCP10
+    projectTo: Amp20
+    typeDist: min # min, max or mean
+    typeProjection: byWeight # simple or byWeight
+    subjectsOne: testHCP10_subjNames.txt
+    subjectsTwo: testAmp20_subjNames.txt
+    combDir: /testHCP10_testAmp20
+    shapeValTwo: 'Isomap/isomapCmdsCSSylk5d3_1_distmin_keepOut.txt'
+    outName: HCP10_to_Amp20_isoCmdsk5d31min.txt
+    outNameSubj: HCP10_to_Amp20_isoCmdsk5d31min_subjMap.txt
+
+  callGetWeight:  
+    ###  Calculate the weight given the shape descriptor  ### 
+    #################   parameter definitions   ##################    
+    # shapeInDir: the folder where the shape descriptor is located
+    # inName: the name of the shape file
+    # outName: the output weight name
+    # shapeCol: the column where we take the shape descriptor input integer starting from 0, or input column name as string 
+    # rewriteShape: if you provide a filename (e.g., rewriteShape='cleaned_isomap.csv'), 
+    #               the specific column you used for the calculation will be saved into a new, smaller CSV file;
+    #               if you put 'none', no extra file will be saved
+    #               this is needed only when you have multiple columns in the shape descriptor file
+    # numCoord: the number of coordinates
+      
+    #################   example parameters for isomap, min, dim 3, coord 10   ##################  
+    #shapeInDir: /AtrilBioscaCermoi_time1/CSSyl/shape_Isomap_select
+    #inName: isomapCmdsCSSylk10d3distmin_ctl_1.txt                      # be careful with min/max
+    #outName: isomapCmdsCSSylk10d3distmin_ctl_1_col3_weight.txt         # the 3rd dimension
+    #shapeCol: 2                                                        # starting from 0, here shapeCol 2 for dim 3
+    #rewriteShape: isomapCmdsCSSylk10d3distmin_ctl_1_col3.txt           # write out the column used for dim 3, third column       
+    #numCoord: 10                                                       # 10 coordinates
+
+    ###########################  FPOCalCu  ###########################                 
+    #################   isomap, max, dim 5, coord 8   #################                                
+    #shapeInDir: /AtrilBioscaCermoi_time1/FPOCalCu/shape_select
+    #inName: FPOCalCu_iso_u_max_right_manhattan_SCA_2.csv  #             # Ruisseau results 
+    #inName: FPO-SCu-ScCal_right_name07-15-26--174_embeddings_iso_u.csv   # Champollion results
+    #outName: FPOCalCu_maxRightManhattan_col_IsoDim3Neig5_weight.txt     # Ruisseau results 
+    #outName: FPOCalCu_RightManhattan_col_IsoDim3Neig5_weight.txt       # Champollion results
+    #shapeCol: iso_dim3_neig5  
+    #rewriteShape: FPOCalCu_maxRightManhattan_col_IsoDim3Neig5.txt       # Ruisseau results
+    #rewriteShape: FPOCalCu_RightManhattan_col_IsoDim3Neig5.txt       # Champollion results
+
+    ###########################  Calc  ###########################  
+    shapeInDir: /AtrilBioscaCermoi_time1/Calc/shape_select
+    #inName: Calc_iso_u_min_right_euclidean_SCA_2.csv  #             # Ruisseau results 
+    #outName: Calc_minRightEuclidean_col_IsoDim1Neig5_weight.txt     # Ruisseau results 
+    #shapeCol: iso_dim1_neig5  
+    #rewriteShape: Calc_minRightEuclidean_col_IsoDim1Neig5.txt       # Ruisseau results
+    
+    inName: Calc_iso_u_min_right_euclidean_SCA_7.csv  #             # Ruisseau results 
+    #outName: Calc_minRightEuclidean_col_IsoDim4Neig5_weight.txt     # Ruisseau results Dim 4
+    #shapeCol: iso_dim4_neig5  
+    #rewriteShape: Calc_minRightEuclidean_col_IsoDim4Neig5.txt       # Ruisseau results 
+    outName: Calc_minRightEuclidean_col_IsoDim3Neig5_weight.txt     # Ruisseau results Dim3
+    shapeCol: iso_dim3_neig5  
+    rewriteShape: Calc_minRightEuclidean_col_IsoDim3Neig5.txt       # Ruisseau results          
+    numCoord: 8      
+    
+                                
+  callPrepProjectionMesh:
+    #shapeInDir: /Shape_study/CSSyl/HCP10_project_to_Amp20
+    #inBckDir: /testHCP10/CSSyl/mesh_ori
+    #combPath: /testHCP10_testAmp20/
+    #curTrmFile: /testHCP10_testAmp20/CSSyl/ICP/transRotMat_CSSyl.txt
+    #center: L101006
+
+  callGetMeshSpread:
+    ###  Move the meshes according to the weight file generated above in callGetWeight  ###
+    #################   parameter definitions   ##################  
+    # coordScale: the spacing regulator -e, 500 for CSSyl, 800 for CSpreCS
+    #             for other regions need to experiment to find the ideal spacing 
+    # bckInDir: the input directory of the meshes, moved to the center-subject space already    
+    # shapeInDir: the folder where the shape descriptor is located
+    # inName: the name of the shape file
+    # outDir: the name of the output directory
+    # curWeightFile: the name of the weight file generated in callGetWeight 
+    # numCoord: the number of coordinates         
+    # important assumption: 
+    #     in 'shapeInDir' there exist the file 'inName' 
+    #     'outDir' is a sub-dir of 'shapeInDir'
+    
+    #################   example parameters for isomap, min, dim 3, coord 10   ################## 
+    #coordScale: 500        
+    #bckInDir: /AtrilBioscaCermoi_time1/CSSyl/mesh_flip-R00005PS_V1   
+    #shapeInDir: /AtrilBioscaCermoi/CSSyl/shape_Isomap_select
+    #inName: isomapCmdsCSSylk10d3distmin_sca_1_7_col3.txt
+    #outDir: /isomapCmdsCSSylk10d3distmin_sca_1_7_col3  
+    #curWeightFile: /AtrilBioscaCermoi/CSSyl/shape_Isomap_select/isomapCmdsCSSylk10d3distmin_sca_1_7_col3_weight.txt
+    #numCoord: 10
+
+    ###########################  FPOCalCu  ###########################                     
+    #################   isomap, max, dim 5, coord 8   #################                 
+    #bckInDir: /AtrilBioscaCermoi_time1/FPOCalCu/mesh_L001020HG_E1
+    #shapeInDir: /AtrilBioscaCermoi_time1/FPOCalCu/shape_select
+    #inName: FPOCalCu_maxRightManhattan_col_IsoDim3Neig5.txt  # Ruisseau 
+    #outDir: /maxRightManhattan_col_IsoDim3Neig5  # Ruisseau
+    #curWeightFile: /AtrilBioscaCermoi_time1/FPOCalCu/shape_select/FPOCalCu_maxRightManhattan_col_IsoDim3Neig5_weight.txt # Ruisseau
+    #inName: FPOCalCu_RightManhattan_col_IsoDim3Neig5.txt  # Champollion 
+    #outDir: /RightManhattan_col_IsoDim3Neig5  # Champollion
+    #curWeightFile: /AtrilBioscaCermoi_time1/FPOCalCu/shape_select/FPOCalCu_RightManhattan_col_IsoDim3Neig5_weight.txt # Champollion
+    
+    ###########################  Calc  ###########################  
+    bckInDir: /AtrilBioscaCermoi_time1/Calc/mesh_flip-R00030CA_V1
+    shapeInDir: /AtrilBioscaCermoi_time1/Calc/shape_select
+    #inName: Calc_minRightEuclidean_col_IsoDim1Neig5.txt  # Ruisseau SCA2
+    #outDir: /inRightEuclidean_col_IsoDim1Neig5  # Ruisseau
+    #curWeightFile: /AtrilBioscaCermoi_time1/Calc/shape_select/Calc_minRightEuclidean_col_IsoDim1Neig5_weight.txt # Ruisseau  
+
+    #inName: Calc_minRightEuclidean_col_IsoDim4Neig5.txt  # Ruisseau SCA7, Dim 4
+    #outDir: /inRightEuclidean_col_IsoDim4Neig5  # Ruisseau
+    #curWeightFile: /AtrilBioscaCermoi_time1/Calc/shape_select/Calc_minRightEuclidean_col_IsoDim4Neig5_weight.txt # Ruisseau    
+    
+    inName: Calc_minRightEuclidean_col_IsoDim3Neig5.txt  # Ruisseau SCA7, Dim 4
+    outDir: /inRightEuclidean_col_IsoDim3Neig5  # Ruisseau
+    curWeightFile: /AtrilBioscaCermoi_time1/Calc/shape_select/Calc_minRightEuclidean_col_IsoDim3Neig5_weight.txt # Ruisseau       
+    
+    coordScale: 800    
+    numCoord: 8
+        
+                                                                                
+  callGenMA_ima:
+    ###  Get the averaged MA images according to the weight generated  ###
+    #################   parameter definitions   ##################
+    #curWeightFile: the weight file generated in CallGetWeight 
+    #ima_in_dir:  the images already generated in the general run step beforehand
+    #imaMA_out_dir:  the output directory of the MAs
+    
+    #################   example parameters for isomap, min, dim 3, coord 10   ##################        
+    #curWeightFile: /AtrilBioscaCermoi/CSSyl/shape_Isomap_select/isomapCmdsCSSylk10d3distmin_sca_1_7_col3_weight.txt
+    #ima_in_dir: /AtrilBioscaCermoi/CSSyl/ima_spamCoord10isomapCmdsCSSylk10d3_3_minscale1_keepOut
+    #imaMA_out_dir: /AtrilBioscaCermoi/CSSyl/shape_Isomap_select/imaMA_dim33_sca_1_7_min            
+
+    ###########################  FPOCalCu  ###########################         
+    #################   isomap, max, dim 5, coord 8   #################                                                               
+    #curWeightFile: /AtrilBioscaCermoi_time1/FPOCalCu/shape_select/FPOCalCu_maxRightManhattan_col_IsoDim3Neig5_weight.txt # Ruisseau
+    #curWeightFile: /AtrilBioscaCermoi_time1/FPOCalCu/shape_select/FPOCalCu_RightManhattan_col_IsoDim3Neig5_weight.txt    # Champollion
+    #ima_in_dir: /AtrilBioscaCermoi_time1/FPOCalCu/ima_FPOCalCu
+    #imaMA_out_dir: /AtrilBioscaCermoi_time1/FPOCalCu/shape_select/imaMA_maxRightManhattan_col_IsoDim3Neig5  # Ruisseau
+    #imaMA_out_dir: /AtrilBioscaCermoi_time1/FPOCalCu/shape_select/imaMA_RightManhattan_col_IsoDim3Neig5      #Champollion
+
+    ###########################  Calc  ###########################
+    ima_in_dir: /AtrilBioscaCermoi_time1/Calc/ima_Calc
+    #curWeightFile: /AtrilBioscaCermoi_time1/Calc/shape_select/Calc_minRightEuclidean_col_IsoDim1Neig5_weight.txt # Ruisseau SCA2
+    #imaMA_out_dir: /AtrilBioscaCermoi_time1/Calc/shape_select/imaMA_minRightEuclidean_col_IsoDim1Neig5  # Ruisseau
+    
+    #curWeightFile: /AtrilBioscaCermoi_time1/Calc/shape_select/Calc_minRightEuclidean_col_IsoDim4Neig5_weight.txt # Ruisseau SCA7, Dim 4
+    #imaMA_out_dir: /AtrilBioscaCermoi_time1/Calc/shape_select/imaMA_minRightEuclidean_col_IsoDim4Neig5  # Ruisseau
+    
+    curWeightFile: /AtrilBioscaCermoi_time1/Calc/shape_select/Calc_minRightEuclidean_col_IsoDim3Neig5_weight.txt # Ruisseau SCA7, Dim 3
+    imaMA_out_dir: /AtrilBioscaCermoi_time1/Calc/shape_select/imaMA_minRightEuclidean_col_IsoDim3Neig5  # Ruisseau
+
+        
+                                        
+  callGenMA_mesh:
+    ###  Get the averaged MA meshes according to MA images generated above  ###
+    #################   parameter definitions   ##################
+    # curWeightFile: the weight file generated in CallGetWeight 
+    # imaMA_in_dir:  the MA images already generated in the step just above
+    # meshMA_out_dir:  the output directory of the MA meshes
+    # targetMesh_path: the location of meshes to the center subject
+    # target_name: the name of the center subject
+    # coordScale: the spacing regulator -e, 500 for CSSyl, 800 for CSpreCS
+    #             for other regions need to experiment to find the ideal spacing 
+    # smoothingFactor: smoothing factor for mesh              
+    # aimsThreshold: aims threshold for mesh    
+    
+    #################   example parameters for isomap, min, dim 3, coord 10   ##################         
+    #curWeightFile: /AtrilBioscaCermoi/CSSyl/shape_Isomap_select/isomapCmdsCSSylk10d3distmin_sca_1_7_col3_weight.txt
+    #imaMA_in_dir: /AtrilBioscaCermoi/CSSyl/shape_Isomap_select/imaMA_dim33_sca_1_7_min       
+    #meshMA_out_dir: /AtrilBioscaCermoi/CSSyl/shape_Isomap_select/meshMA_dim33_sca_1_7_min   
+    #targetMesh_path: /AtrilBioscaCermoi_time1/CSSyl/mesh_flip-R00005PS_V1
+    #target_name: flip-R00005PS_V1 
+    #coordScale: 500       # -e for regulating spacing, 500 for CSSyl, 800 for CSpreCS
+    #smoothingFactor: 3.0  # -o, default to 2.0              
+    #aimsThreshold: 0.06   # -t # CSSyl default to 0.06
+
+    ###########################  FPOCalCu  ###########################    
+    #################   isomap, max, dim 5, coord 8   ################# 
+    #curWeightFile: /AtrilBioscaCermoi_time1/FPOCalCu/shape_select/FPOCalCu_maxRightManhattan_col_IsoDim3Neig5_weight.txt  # Ruisseau
+    #curWeightFile: /AtrilBioscaCermoi_time1/FPOCalCu/shape_select/FPOCalCu_RightManhattan_col_IsoDim3Neig5_weight.txt   # Champollion
+    #imaMA_in_dir: /AtrilBioscaCermoi_time1/FPOCalCu/shape_select/imaMA_maxRightManhattan_col_IsoDim3Neig5   # Ruisseau
+    #imaMA_in_dir: /AtrilBioscaCermoi_time1/FPOCalCu/shape_select/imaMA_RightManhattan_col_IsoDim3Neig5       # Champollion
+    #meshMA_out_dir: /AtrilBioscaCermoi_time1/FPOCalCu/shape_select/meshMA_maxRightManhattan_col_IsoDim3Neig5  # Ruisseau  
+    #meshMA_out_dir: /AtrilBioscaCermoi_time1/FPOCalCu/shape_select/meshMA_RightManhattan_col_IsoDim3Neig5      # Champollion       
+    #targetMesh_path: /AtrilBioscaCermoi_time1/FPOCalCu/mesh_L001020HG_E1
+    #target_name: L001020HG_E1
+       
+    ###########################  Calc  ########################### 
+    targetMesh_path: /AtrilBioscaCermoi_time1/Calc/mesh_flip-R00030CA_V1
+    target_name: flip-R00030CA_V1 
+          
+    #curWeightFile: /AtrilBioscaCermoi_time1/Calc/shape_select/Calc_minRightEuclidean_col_IsoDim1Neig5_weight.txt # Ruisseau SCA2
+    #imaMA_in_dir: /AtrilBioscaCermoi_time1/Calc/shape_select/imaMA_minRightEuclidean_col_IsoDim1Neig5  # Ruisseau
+    #meshMA_out_dir: /AtrilBioscaCermoi_time1/Calc/shape_select/meshMA_minRightEuclidean_col_IsoDim1Neig5  # Ruisseau     
+      
+    #curWeightFile: /AtrilBioscaCermoi_time1/Calc/shape_select/Calc_minRightEuclidean_col_IsoDim4Neig5_weight.txt # Ruisseau SCA2, Dim 4
+    #imaMA_in_dir: /AtrilBioscaCermoi_time1/Calc/shape_select/imaMA_minRightEuclidean_col_IsoDim4Neig5  # Ruisseau
+    #meshMA_out_dir: /AtrilBioscaCermoi_time1/Calc/shape_select/meshMA_minRightEuclidean_col_IsoDim4Neig5  # Ruisseau  
+    
+    curWeightFile: /AtrilBioscaCermoi_time1/Calc/shape_select/Calc_minRightEuclidean_col_IsoDim3Neig5_weight.txt # Ruisseau SCA2, Dim 3
+    imaMA_in_dir: /AtrilBioscaCermoi_time1/Calc/shape_select/imaMA_minRightEuclidean_col_IsoDim3Neig5  # Ruisseau
+    meshMA_out_dir: /AtrilBioscaCermoi_time1/Calc/shape_select/meshMA_minRightEuclidean_col_IsoDim3Neig5  # Ruisseau        
+       
+    coordScale: 600       # -e for regulating spacing, 500 for CSSyl, 800 for CSpreCS
+    smoothingFactor: 3.0  # -o, default to 2.0              
+    aimsThreshold: 0.05   # -t # CSSyl default to 0.06, 0.045 Ruisseau
+       
+    
